@@ -1,5 +1,5 @@
 ---
-abstract: 'Use development modules in place'
+abstract: 'Use development code in place'
 author:
   - 'Ingy döt Net'
 build_requires:
@@ -17,9 +17,12 @@ name: Devel-Local
 no_index:
   directory:
     - inc
+    - share
     - t
 requires:
   perl: 5.8.3
 resources:
+  homepage: http://github.com/ingydotnet/devel-local-pm/tree
   license: http://dev.perl.org/licenses/
-version: 0.12
+  repository: git://github.com/ingydotnet/devel-local-pm.git
+version: 0.13

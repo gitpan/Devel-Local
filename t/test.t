@@ -1,38 +1,69 @@
-use Test::More tests => 5;
+use Test::More tests => 11;
+use t::Test;
 
-use Cwd qw(cwd abs_path);
-
-my $cwd = cwd;
-my $old_path = $ENV{PATH};
-my $old_perl5lib = $ENV{PERL5LIB};
-my $perl = $^X;
-
+my $home = cwd;
 chdir 't' or die;
 my $t = cwd;
 
-my $PATH1 = `$perl -MDevel::Local=PATH`;
-is $PATH1, "$t/aaa/bin:$t/bbb/bin:$old_path", 'PATH works';
+set_env_min();
+my $label = "use Devel::Local;";
+my $expected_path = join($sep, "$t/aaa/bin", "$t/bbb/bin", '|', $ENV{PATH});
+my $expected_perl5lib = join($sep, "$t/aaa/lib", "$t/ccc/lib", '|');
+do {
+    test($label,
+        sub {
+            eval "use Devel::Local; 1" or die $@;
+            (($ENV{PERL5LIB} = join $sep, @INC)) =~ s/(?<=\:\|):.*//;
+        },
+        $expected_path,
+        $expected_perl5lib,
+    );
+    $label .= " (2nd time)";
+} for 1..2;
 
-my $PERL5LIB1 = `$perl -MDevel::Local=PERL5LIB`;
-is $PERL5LIB1, "$t/aaa/lib:$t/ccc/lib:$old_perl5lib", 'PERL5LIB works';
+set_env_min();
+test("perl -MDevel::Local::ENVVAR ...",
+    sub {
+        $ENV{PATH} = `$^X -I../lib -MDevel::Local::PATH`;
+        $ENV{PERL5LIB} = `$^X -I../lib -MDevel::Local::PERL5LIB`;
+    },
+    $expected_path,
+    $expected_perl5lib,
+);
 
-# Make sure that repeated invocations not increase the paths:
+chdir $home or die;
+set_env_min();
 {
-    local $ENV{PATH} = $PATH1;
-    my $PATH2 = `$perl -MDevel::Local=PATH`;
-    is $PATH2, $PATH1, 'PATH works the second time';
-
-    local $ENV{PERL5LIB} = $PERL5LIB1;
-    my $PERL5LIB2 = `$perl -MDevel::Local=PERL5LIB`;
-    is $PERL5LIB2, $PERL5LIB1, 'PERL5LIB works the second time';
-};
-
-{
-    local $ENV{PATH} = $old_path . ':';
-    my $PATH3 = `$perl -MDevel::Local=PATH`;
-    is $PATH3, "$t/aaa/bin:$t/bbb/bin:$old_path\:", 'PATH works when it ends with :';
+    local $ENV{HOME} = $t;
+    test('use Devel::Local; # With $HOME/.perl-devel-local',
+        sub {
+            eval "use Devel::Local; 1" or die $@;
+            (($ENV{PERL5LIB} = join $sep, @INC)) =~ s/(?<=\:\|):.*//;
+        },
+        join($sep, "$t/bbb/bin", '|', $ENV{PATH}),
+        join($sep, "$t/ccc/lib", '|'),
+    );
 }
 
-chdir $cwd or die;
+set_env_min();
+my $path1 = $ENV{PATH};
+test("use Devel::Local 't/*';",
+    sub {
+        $ENV{PATH} = `$^X -Ilib -MDevel::Local::PATH -e1 't/*'`;
+        $ENV{PERL5LIB} = `$^X -Ilib -MDevel::Local::PERL5LIB -e1 't/*'`;
+    },
+    $expected_path,
+    $expected_perl5lib,
+);
+eval "use Devel::Local '!'; 1" or die $@;
+is $ENV{PATH}, $path1, 'PATH reset works';
 
-# TODO add tests for $HOME and $PERL_DEVEL_LOCAL
+#------------------------------------------------------------------------------#
+sub test {
+    my ($label, $callback, $expected_path, $expected_perl5lib) = @_;
+    $ENV{PERL_DEVEL_LOCAL_QUIET} = 1;
+    &$callback();
+
+    is $ENV{PATH}, $expected_path, "$label - PATH works";
+    is $ENV{PERL5LIB}, $expected_perl5lib, "$label - PERL5LIB works";
+}
