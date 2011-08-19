@@ -125,9 +125,11 @@ or:
 You can use Devel::Local with modules that are not pure Perl. In other words,
 modules that get compiled before installing.
 
-The trick is to run C<make> (or equivalent) in the appropriate directories so
-that things get compiled into C<blib/> before using Devel::Local. If
-Devel::Local sees a C<blib/> subdirectory it will use that instead of C<lib>.
+If Devel::Local sees a C<.xs> file anywhere in the dist, it will add C<blib/>
+to the C<PERL5LIB> after <lib/>.
+
+It is up to you to run C<make> after changing your .xs code, so that the
+changes get added to your C<blib/>.
 
 =head1 DISPLAY $PATH AND $PERL5LIB
 
