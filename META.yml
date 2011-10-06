@@ -17,7 +17,6 @@ name: Devel-Local
 no_index:
   directory:
     - inc
-    - share
     - t
 requires:
   perl: 5.8.3
@@ -25,4 +24,4 @@ resources:
   homepage: http://github.com/ingydotnet/devel-local-pm/tree
   license: http://dev.perl.org/licenses/
   repository: git://github.com/ingydotnet/devel-local-pm.git
-version: 0.15
+version: 0.16
