@@ -12,7 +12,7 @@ lib/Devel/Local.pm
 lib/Devel/Local.pod
 lib/Devel/Local/PATH.pm
 lib/Devel/Local/PERL5LIB.pm
-t/000-compile-modules.t
+t/000-require-modules.t
 t/Test.pm
 t/aaa/bin/_
 t/aaa/lib/_
