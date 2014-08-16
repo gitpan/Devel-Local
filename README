@@ -133,7 +133,7 @@ TURNING "DEVEL::LOCAL" OFF
         > devel::local path/foo path/bar-*  # Add more stuff
         > devel::local !    # Reset to original values
 
-SEE
+SEE ALSO
     *   File::Share
 
     *   ylib
