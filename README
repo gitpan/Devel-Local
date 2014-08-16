@@ -107,7 +107,7 @@ USAGE
 
             > devel-local .  ../yaml-libyaml-pm/ ../catalyst-*
 
-XS AND `BLIB`
+XS AND "BLIB"
     You can use Devel::Local with modules that are not pure Perl. In other
     words, modules that get compiled before installing.
 
@@ -117,14 +117,14 @@ XS AND `BLIB`
     It is up to you to run "make" after changing your .xs code, so that the
     changes get added to your "blib/".
 
-DISPLAY `$PATH` AND `$PERL5LIB`
+DISPLAY $PATH AND $PERL5LIB
     Whenever you use the "devel-local" bash function, it will pretty print
     the values. If you just want to see the values listed without modifying
     them, do this:
 
         > devel-local ?
 
-TURNING `DEVEL::LOCAL` OFF
+TURNING "DEVEL::LOCAL" OFF
     Devel::Local puts a special delimiter, '|', in the PATH variables, so
     that it can later remove the things it added. You can trigger this by
     passing it a single argument of '!'.
